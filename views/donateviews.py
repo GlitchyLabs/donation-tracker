@@ -100,15 +100,14 @@ def process_form(request, event):
                     "business": donation.event.paypalemail,
                     "item_name": donation.event.receivername,
                     "notify_url": serverURL + reverse('tracker:ipn'),
-                    "return_url": serverURL + reverse('tracker:paypal_return'),
+                    "return": serverURL + reverse('tracker:paypal_return'),
                     "cancel_return": serverURL + reverse('tracker:paypal_cancel'),
                     "custom": str(donation.id) + ":" + donation.domainId,
                     "currency_code": donation.event.paypalcurrency,
                     "no_shipping": 0,
                 }
                 # Create the form instance
-                form = PayPalPaymentsForm(
-                    button_type="donate", sandbox=donation.event.usepaypalsandbox, initial=paypal_dict)
+                form = PayPalPaymentsForm(button_type="donate", initial=paypal_dict)
                 context = {"event": donation.event, "form": form}
                 return views_common.tracker_response(request, "tracker/paypal_redirect.html", context), None, None
         else:

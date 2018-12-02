@@ -18,7 +18,7 @@ def create_ipn(request):
     if form.is_valid():
         try:
             ipnObj = form.save(commit=False)
-        except Exception, e:
+        except Exception as e:
             flag = "Exception while processing. (%s)" % e
     else:
         flag = "Invalid form. (%s)" % form.errors
@@ -35,7 +35,7 @@ def create_ipn(request):
             donation = get_ipn_donation(ipnObj)
             if not donation:
                 raise Exception('No donation associated with this IPN')
-            ipnObj.verify(None, donation.event.paypalemail)
+            ipnObj.verify()
             verify_ipn_recipient_email(ipnObj, donation.event.paypalemail)
     ipnObj.save()
     return ipnObj

@@ -358,7 +358,7 @@ def merge_bids_view(request, *args, **kwargs):
         objects = map(lambda x: int(x), request.GET['objects'].split(','))
         form = forms.MergeObjectsForm(
             model=tracker.models.Bid, objects=objects)
-    return render(request, 'admin/merge_bids.html', dictionary={'form': form})
+    return render(request, 'admin/merge_bids.html', {'form': form})
 
 
 class BidSuggestionForm(djforms.ModelForm):
@@ -717,22 +717,7 @@ def merge_donors_view(request, *args, **kwargs):
         objects = map(lambda x: int(x), request.GET['objects'].split(','))
         form = forms.MergeObjectsForm(
             model=tracker.models.Donor,objects=objects)
-    return render(request, 'admin/merge_donors.html', dictionary={'form': form})
-
-
-def google_flow(request):
-    try:
-        flow = tracker.models.FlowModel.objects.get(id=request.user.id).flow
-    except tracker.models.FlowModel.DoesNotExist:
-        raise Http404
-    if 'error' in request.GET:
-        return HttpResponse('Either you or Google denied access', status=403)
-    credentials = tracker.models.CredentialsModel.objects.get_or_create(id=request.user)[
-        0]
-    credentials.credentials = flow.step2_exchange(request.GET['code'])
-    credentials.clean()
-    credentials.save()
-    return HttpResponse('Credentials saved successfully, try your previous action again')
+    return render(request, 'admin/merge_donors.html', {'form': form})
 
 
 class EventForm(djforms.ModelForm):
@@ -1011,7 +996,7 @@ def start_run_view(request, run):
         messages.info(request, 'Current start time is %s' % run.starttime)
         return HttpResponseRedirect(reverse('admin:tracker_speedrun_changelist') + '?event=%d' % run.event_id)
     return render(request, 'admin/generic_form.html',
-                  dictionary=dict(
+                  dict(
                       title=u'Set start time for %s' % run,
                       form=form,
                       action=request.path,
@@ -1396,7 +1381,6 @@ def get_urls():
         url('edit_object', views.edit, name='edit_object'),
         url('add_object', views.add, name='add_object'),
         url('delete_object', views.delete, name='delete_object'),
-        url('google_flow', google_flow, name='google_flow'),
         url(r'draw_prize/(?P<id>\d+)', views.draw_prize, name='draw_prize'),
     ] + urls
 
